@@ -97,7 +97,7 @@ class LogCollectorClient {
       const original = console[method] as (...args: unknown[]) => void;
       this.originalConsole[method] = original;
 
-      (console as Record<string, unknown>)[method] = (...args: unknown[]) => {
+      (console as unknown as Record<string, unknown>)[method] = (...args: unknown[]) => {
         original.apply(console, args);
         const message = args
           .map((arg) =>
@@ -217,7 +217,7 @@ class LogCollectorClient {
     // Restore original console methods
     Object.entries(this.originalConsole).forEach(([method, fn]) => {
       if (fn) {
-        (console as Record<string, unknown>)[method] = fn;
+        (console as unknown as Record<string, unknown>)[method] = fn;
       }
     });
 

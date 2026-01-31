@@ -23,3 +23,7 @@ Thumbs.db
 # Application
 logs.db
 *.log
+
+# Node
+node_modules/
+package-lock.json
