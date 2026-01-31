@@ -1,0 +1,99 @@
+<!--
+  Sample logback-spring.xml configuration for services using the log-collector.
+
+  Copy this file to your service's src/main/resources/logback-spring.xml
+  and customize as needed.
+-->
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+  <!-- Service name - CHANGE THIS for each service -->
+  <property name="SERVICE_NAME" value="my-service"/>
+
+  <!-- Log collector URL - configure via environment variable for flexibility -->
+  <property name="LOG_COLLECTOR_URL" value="${LOG_COLLECTOR_URL:-http://localhost:3001/api/logs}"/>
+  <property name="LOG_COLLECTOR_ENABLED" value="${LOG_COLLECTOR_ENABLED:-true}"/>
+
+  <!-- Console pattern -->
+  <property name="CONSOLE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %clr(${SERVICE_NAME}){magenta} %clr(%5p){highlight} %clr([%X{correlationId:-}]){yellow} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"/>
+
+  <!-- Console appender -->
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>${CONSOLE_PATTERN}</pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+  </appender>
+
+  <!--
+    HTTP Log Collector appender (batched)
+    Sends logs to the log-collector service in batches for efficiency.
+  -->
+  <appender name="HTTP" class="com.pcsalt.logcollector.client.HttpLogAppender">
+    <url>${LOG_COLLECTOR_URL}</url>
+    <serviceName>${SERVICE_NAME}</serviceName>
+    <enabled>${LOG_COLLECTOR_ENABLED}</enabled>
+    <batchSize>10</batchSize>
+    <flushIntervalMs>1000</flushIntervalMs>
+    <connectTimeoutMs>5000</connectTimeoutMs>
+    <requestTimeoutMs>10000</requestTimeoutMs>
+    <queueCapacity>10000</queueCapacity>
+  </appender>
+
+  <!--
+    Alternative: Async HTTP appender (sends each log immediately)
+    Use this for low-volume logging or when immediate delivery is preferred.
+  -->
+  <!--
+  <appender name="HTTP_ASYNC" class="com.pcsalt.logcollector.client.AsyncHttpLogAppender">
+    <url>${LOG_COLLECTOR_URL}</url>
+    <serviceName>${SERVICE_NAME}</serviceName>
+    <enabled>${LOG_COLLECTOR_ENABLED}</enabled>
+  </appender>
+  -->
+
+  <!-- Local development profile -->
+  <springProfile name="local">
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="HTTP"/>
+    </root>
+
+    <logger name="com.pcsalt" level="DEBUG"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.hibernate" level="INFO"/>
+  </springProfile>
+
+  <!-- Development environment profile -->
+  <springProfile name="dev">
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+      <!-- Enable HTTP appender in dev if needed -->
+      <!-- <appender-ref ref="HTTP"/> -->
+    </root>
+
+    <logger name="com.pcsalt" level="DEBUG"/>
+    <logger name="org.springframework" level="INFO"/>
+  </springProfile>
+
+  <!-- Production profile - NO HTTP appender -->
+  <springProfile name="prod">
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <logger name="com.pcsalt" level="INFO"/>
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+  </springProfile>
+
+  <!-- Default profile (fallback) -->
+  <springProfile name="default">
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="HTTP"/>
+    </root>
+
+    <logger name="com.pcsalt" level="DEBUG"/>
+  </springProfile>
+</configuration>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log Collector</title>
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+  <header class="header">
+    <h1>Log Collector</h1>
+    <div class="connection-status">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Disconnected</span>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="filter-group">
+      <label for="serviceFilter">Service:</label>
+      <select id="serviceFilter">
+        <option value="">All Services</option>
+        <option th:each="service : ${services}" th:value="${service}" th:text="${service}"></option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Levels:</label>
+      <div class="level-filters">
+        <label class="level-checkbox debug">
+          <input type="checkbox" value="DEBUG" checked> DEBUG
+        </label>
+        <label class="level-checkbox info">
+          <input type="checkbox" value="INFO" checked> INFO
+        </label>
+        <label class="level-checkbox warn">
+          <input type="checkbox" value="WARN" checked> WARN
+        </label>
+        <label class="level-checkbox error">
+          <input type="checkbox" value="ERROR" checked> ERROR
+        </label>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label for="searchInput">Search:</label>
+      <input type="text" id="searchInput" placeholder="Filter by message...">
+    </div>
+
+    <div class="filter-group">
+      <label for="correlationInput">Correlation ID:</label>
+      <input type="text" id="correlationInput" placeholder="Trace ID...">
+    </div>
+
+    <div class="toolbar-actions">
+      <button id="liveTailBtn" class="active">Live Tail</button>
+      <button id="refreshBtn">Refresh</button>
+      <button id="clearBtn" class="clear">Clear</button>
+    </div>
+  </div>
+
+  <div class="log-container">
+    <div class="log-table-wrapper" id="logTableWrapper">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-time">Timestamp</th>
+            <th class="col-service">Service</th>
+            <th class="col-level">Level</th>
+            <th class="col-message">Message</th>
+          </tr>
+        </thead>
+        <tbody id="logTableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span id="logCount">0 logs</span>
+    <span id="lastUpdate">Last update: -</span>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+  <script th:src="@{/js/dashboard.js}"></script>
+</body>
+</html>

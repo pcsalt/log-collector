@@ -1,0 +1,15 @@
+spring:
+  thymeleaf:
+    cache: false
+
+# Local development settings
+log-collector:
+  cleanup:
+    enabled: true
+    retention-hours: 24
+
+logging:
+  level:
+    root: INFO
+    com.pcsalt.logcollector: DEBUG
+    org.springframework.web.socket: DEBUG
