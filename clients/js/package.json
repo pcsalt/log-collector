@@ -1,0 +1,27 @@
+{
+  "name": "@pcsalt/log-collector-client",
+  "version": "1.0.0",
+  "description": "TypeScript client for log-collector service",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "logging",
+    "log-collector",
+    "frontend-logging",
+    "typescript"
+  ],
+  "author": "pcsalt",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}
