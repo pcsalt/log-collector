@@ -3,19 +3,19 @@ spring:
     name: log-collector
 
 server:
-  port: 7777
+  port: ${SERVER_PORT:7777}
 
 # SQLite configuration
 datasource:
-  url: jdbc:sqlite:${LOG_COLLECTOR_DB_PATH:./logs.db}
+  url: jdbc:sqlite:${DATABASE_PATH:./data/logs.db}
   driver-class-name: org.sqlite.JDBC
 
 # Log cleanup settings
 log-collector:
   cleanup:
-    enabled: true
-    retention-hours: 24
-    cron: "0 0 * * * *"  # Run every hour
+    enabled: ${CLEANUP_ENABLED:true}
+    retention-hours: ${LOG_RETENTION_HOURS:24}
+    cron: ${LOG_RETENTION_CRON:0 0 * * * *}
 
 # Actuator
 management:

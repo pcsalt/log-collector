@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  log-collector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: log-collector
+    ports:
+      - "${SERVER_PORT:-7777}:7777"
+    environment:
+      - SERVER_PORT=7777
+      - DATABASE_PATH=/app/data/logs.db
+      - LOG_RETENTION_HOURS=${LOG_RETENTION_HOURS:-24}
+      - LOG_RETENTION_CRON=${LOG_RETENTION_CRON:-0 0 * * * *}
+      - CLEANUP_ENABLED=${CLEANUP_ENABLED:-true}
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    volumes:
+      # Persist database
+      - log-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:7777/actuator/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+    networks:
+      - log-collector-network
+
+  # Optional: Example frontend service that sends logs
+  # example-frontend:
+  #   image: nginx:alpine
+  #   container_name: example-frontend
+  #   ports:
+  #     - "3000:80"
+  #   networks:
+  #     - log-collector-network
+  #   depends_on:
+  #     - log-collector
+
+volumes:
+  log-data:
+    driver: local
+
+networks:
+  log-collector-network:
+    driver: bridge

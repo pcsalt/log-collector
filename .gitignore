@@ -22,8 +22,23 @@ Thumbs.db
 
 # Application
 logs.db
+logs.db-shm
+logs.db-wal
 *.log
+data/
+
+# Environment
+.env
+.env.local
+.env.*.local
 
 # Node
 node_modules/
 package-lock.json
+npm-debug.log
+yarn-error.log
+.nyc_output/
+coverage/
+
+# Docker
+docker-compose.override.yml
