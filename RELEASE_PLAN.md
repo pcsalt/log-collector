@@ -289,9 +289,8 @@
 - **Requirements:** npm account
 
 ### Docker Images
-- **Primary:** GitHub Container Registry (ghcr.io)
-- **Secondary:** Docker Hub
-- **Benefits:** Integrated with GitHub, free for public repos
+- **Target:** Docker Hub (krrishnaaaa/log-collector)
+- **Benefits:** Most popular registry, easy to use, free for public images
 
 ---
 

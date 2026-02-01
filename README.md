@@ -6,6 +6,28 @@ A lightweight, centralized logging service for collecting, storing, and visualiz
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9+-purple.svg)](https://kotlinlang.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+[![GitHub release](https://img.shields.io/github/v/release/pcsalt/log-collector)](https://github.com/pcsalt/log-collector/releases)
+[![Status](https://img.shields.io/badge/Status-Active%20Development-green.svg)](https://github.com/pcsalt/log-collector)
+
+> **Status:** Active Development - v1.0.0 release coming soon! Currently in Phase 1 (Configuration & Docker support complete). See [RELEASE_PLAN.md](RELEASE_PLAN.md) for roadmap.
+
+## Table of Contents
+
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [Client Libraries](#client-libraries)
+- [API Endpoints](#api-endpoints)
+- [Docker Deployment](#docker-deployment)
+- [Use Cases](#use-cases)
+- [Architecture](#architecture)
+- [Performance](#performance)
+- [Development](#development)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+- [Support](#support)
 
 ## Features
 
@@ -20,13 +42,25 @@ A lightweight, centralized logging service for collecting, storing, and visualiz
 - **🎯 HTTP Capture** - Automatic request/response logging (JavaScript client)
 - **💾 SQLite Storage** - Simple, file-based database (no external dependencies)
 
+## Screenshots
+
+### Dashboard
+![Dashboard](docs/images/dashboard.png)
+*Real-time log streaming with filtering and search capabilities*
+
+### Log Details
+![Log Details](docs/images/log-details.png)
+*Detailed view with correlation ID, logger, thread information*
+
+> **Note:** Screenshots coming soon. Access the dashboard at http://localhost:7777 after starting the service.
+
 ## Quick Start
 
 ### Using Docker (Recommended)
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/log-collector.git
+git clone https://github.com/pcsalt/log-collector.git
 cd log-collector
 
 # Start with docker-compose
@@ -40,7 +74,7 @@ open http://localhost:7777
 
 ```bash
 # Download latest release
-wget https://github.com/yourusername/log-collector/releases/latest/download/log-collector.jar
+wget https://github.com/pcsalt/log-collector/releases/latest/download/log-collector.jar
 
 # Run the service
 java -jar log-collector.jar
@@ -53,7 +87,7 @@ open http://localhost:7777
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/log-collector.git
+git clone https://github.com/pcsalt/log-collector.git
 cd log-collector
 
 # Build
@@ -92,6 +126,13 @@ CLEANUP_ENABLED=true
 Perfect for frontend applications (React, Vue, Angular, etc.)
 
 **Installation:**
+
+For now, install from local path (npm publishing coming soon):
+```bash
+npm install /path/to/log-collector/clients/js
+```
+
+After v1.0.0 release, install from npm:
 ```bash
 npm install @pcsalt/log-collector-client
 ```
@@ -120,8 +161,28 @@ logger.error('Failed to fetch data');
 For Spring Boot and Kotlin backend services.
 
 **Installation:**
+
+For now, install from local Maven repository:
+```bash
+# Publish to local Maven
+cd /path/to/log-collector
+./gradlew publishToMavenLocal
+```
+
 ```kotlin
 // build.gradle.kts
+repositories {
+    mavenLocal()  // Add this
+    mavenCentral()
+}
+
+dependencies {
+    implementation("com.pcsalt:log-collector-client:1.0.0-SNAPSHOT")
+}
+```
+
+After v1.0.0 release, install from Maven Central:
+```kotlin
 dependencies {
     implementation("com.pcsalt:log-collector-client:1.0.0")
 }
@@ -183,11 +244,19 @@ curl -X POST http://localhost:7777/api/logs/batch \
 
 ### Basic Deployment
 
+**Using the repository:**
+```bash
+git clone https://github.com/pcsalt/log-collector.git
+cd log-collector
+docker-compose up -d
+```
+
+**Using pre-built image (after v1.0.0 release):**
 ```yaml
 version: '3.8'
 services:
   log-collector:
-    image: ghcr.io/yourusername/log-collector:latest
+    image: krrishnaaaa/log-collector:latest
     ports:
       - "7777:7777"
     environment:
@@ -199,6 +268,8 @@ services:
 volumes:
   log-data:
 ```
+
+For detailed Docker deployment options, see [Docker Deployment Guide](docs/DOCKER.md).
 
 ### With Custom Configuration
 
@@ -249,7 +320,7 @@ docker-compose up -d
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/log-collector.git
+git clone https://github.com/pcsalt/log-collector.git
 cd log-collector
 
 # Build
@@ -267,7 +338,15 @@ docker build -t log-collector .
 
 ## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome! Whether you want to:
+- 🐛 Report a bug
+- 💡 Suggest a new feature
+- 📝 Improve documentation
+- 🔧 Submit a pull request
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines (coming soon).
+
+For now, feel free to [open an issue](https://github.com/pcsalt/log-collector/issues) to discuss your ideas!
 
 ## License
 
@@ -275,8 +354,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- **Issues:** [GitHub Issues](https://github.com/yourusername/log-collector/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/yourusername/log-collector/discussions)
+- **Issues:** [GitHub Issues](https://github.com/pcsalt/log-collector/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/pcsalt/log-collector/discussions)
 - **Documentation:** [docs/](docs/)
 
 ## Roadmap
