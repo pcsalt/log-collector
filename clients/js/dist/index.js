@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Log Collector JavaScript Client
  *
@@ -9,10 +8,6 @@
  * - Global error handler integration
  * - TypeScript support
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogCollectorClient = void 0;
-exports.initLogCollector = initLogCollector;
-exports.getLogCollector = getLogCollector;
 class LogCollectorClient {
     constructor(config) {
         this.queue = [];
@@ -171,10 +166,9 @@ class LogCollectorClient {
         return this.isCollectorAvailable;
     }
 }
-exports.LogCollectorClient = LogCollectorClient;
 // Singleton instance
 let instance = null;
-function initLogCollector(config) {
+export function initLogCollector(config) {
     if (instance) {
         console.warn('[LogCollector] Already initialized. Returning existing instance.');
         return instance;
@@ -182,8 +176,9 @@ function initLogCollector(config) {
     instance = new LogCollectorClient(config);
     return instance;
 }
-function getLogCollector() {
+export function getLogCollector() {
     return instance;
 }
-exports.default = LogCollectorClient;
+export { LogCollectorClient };
+export default LogCollectorClient;
 //# sourceMappingURL=index.js.map

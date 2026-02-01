@@ -110,6 +110,26 @@ const LogCollector = {
   async loadInitialLogs() {
     try {
       const params = new URLSearchParams({ limit: '500' });
+
+      // Add filter parameters
+      if (this.filters.service) {
+        params.append('service', this.filters.service);
+      }
+
+      if (this.filters.levels && this.filters.levels.length > 0) {
+        this.filters.levels.forEach(level => {
+          params.append('levels', level);
+        });
+      }
+
+      if (this.filters.search) {
+        params.append('search', this.filters.search);
+      }
+
+      if (this.filters.correlationId) {
+        params.append('correlationId', this.filters.correlationId);
+      }
+
       const response = await fetch(`/api/logs?${params}`);
       const data = await response.json();
 
@@ -160,7 +180,8 @@ const LogCollector = {
   },
 
   applyFilters() {
-    this.renderLogs();
+    // Reload logs from backend with filters
+    this.loadInitialLogs();
   },
 
   renderLogs() {
