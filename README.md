@@ -4,7 +4,8 @@ A lightweight, centralized logging service for collecting, storing, and visualiz
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
-[![Kotlin](https://img.shields.io/badge/Kotlin-1.9+-purple.svg)](https://kotlinlang.org/)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-purple.svg)](https://kotlinlang.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
 [![GitHub release](https://img.shields.io/github/v/release/pcsalt/log-collector)](https://github.com/pcsalt/log-collector/releases)
 [![Status](https://img.shields.io/badge/Status-Active%20Development-green.svg)](https://github.com/pcsalt/log-collector)
