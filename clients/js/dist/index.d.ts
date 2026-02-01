@@ -6,6 +6,7 @@
  * - Retry with exponential backoff on failure
  * - Console integration (captures console.log, console.error, etc.)
  * - Global error handler integration
+ * - HTTP request/response capture (fetch and XMLHttpRequest)
  * - TypeScript support
  */
 export type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
@@ -27,6 +28,7 @@ export interface LogCollectorConfig {
     maxRetries?: number;
     captureConsole?: boolean;
     captureErrors?: boolean;
+    captureHttp?: boolean;
     correlationIdFn?: () => string | undefined;
 }
 declare class LogCollectorClient {
@@ -36,10 +38,13 @@ declare class LogCollectorClient {
     private isCollectorAvailable;
     private retryCount;
     private originalConsole;
+    private originalFetch?;
+    private originalXMLHttpRequest?;
     constructor(config: LogCollectorConfig);
     private startFlushTimer;
     private setupConsoleCapture;
     private setupErrorCapture;
+    private setupHttpCapture;
     private log;
     debug(message: string, logger?: string): void;
     info(message: string, logger?: string): void;

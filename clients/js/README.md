@@ -9,6 +9,7 @@ A TypeScript client for sending logs to the log-collector service.
 - Retry with re-queuing on failure
 - Console integration (captures console.log, console.error, etc.)
 - Global error handler integration (window.onerror, unhandledrejection)
+- HTTP request/response capture (fetch and XMLHttpRequest)
 - Works in browser and Node.js
 
 ## Installation
@@ -82,6 +83,31 @@ throw new Error('Uncaught error');
 Promise.reject('Unhandled rejection');
 ```
 
+### With HTTP Request/Response Capture
+
+Automatically captures all HTTP requests and responses (fetch and XMLHttpRequest):
+
+```typescript
+import { LogCollectorClient } from '@pcsalt/log-collector-client';
+
+const logger = new LogCollectorClient({
+  url: 'http://localhost:3030/api/logs',
+  serviceName: 'my-frontend',
+  captureHttp: true  // Intercepts fetch and XMLHttpRequest
+});
+
+// These HTTP calls will be logged automatically
+fetch('/api/users').then(res => res.json());
+const xhr = new XMLHttpRequest();
+xhr.open('POST', '/api/data');
+xhr.send();
+
+// Logged info includes:
+// - Method, URL, status code, duration
+// - Request headers (excluding sensitive ones like Authorization, Cookie)
+// - Response headers (excluding sensitive ones)
+```
+
 ### Full Configuration
 
 ```typescript
@@ -96,6 +122,7 @@ const config: LogCollectorConfig = {
   maxRetries: 3,                    // Max retry attempts (default: 3)
   captureConsole: true,             // Capture console.* calls (default: false)
   captureErrors: true,              // Capture global errors (default: false)
+  captureHttp: true,                // Capture HTTP requests/responses (default: false)
   correlationIdFn: () => {          // Optional: provide correlation ID
     return sessionStorage.getItem('correlationId') || undefined;
   }
@@ -115,7 +142,8 @@ export const logger = new LogCollectorClient({
   serviceName: 'my-frontend',
   enabled: import.meta.env.DEV,
   captureConsole: true,
-  captureErrors: true
+  captureErrors: true,
+  captureHttp: true
 });
 
 // src/ErrorBoundary.tsx
@@ -190,6 +218,7 @@ interface LogCollectorConfig {
   maxRetries?: number;
   captureConsole?: boolean;
   captureErrors?: boolean;
+  captureHttp?: boolean;
   correlationIdFn?: () => string | undefined;
 }
 ```

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTTP Capture Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    #log {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      min-height: 200px;
+      max-height: 500px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .log-entry {
+      margin: 5px 0;
+      padding: 3px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .success {
+      color: #4CAF50;
+    }
+    .error {
+      color: #f44336;
+    }
+    .info {
+      color: #2196F3;
+    }
+  </style>
+</head>
+<body>
+  <h1>HTTP Request/Response Capture Test</h1>
+  <p>This page tests the log-collector by making HTTP requests and logging them:</p>
+
+  <button onclick="testFetch()">Test Fetch API</button>
+  <button onclick="testXHR()">Test XMLHttpRequest</button>
+  <button onclick="testManualLog()">Test Manual Logging</button>
+  <button onclick="clearLog()">Clear Log</button>
+
+  <div id="log"></div>
+
+  <script>
+    const logDiv = document.getElementById('log');
+
+    function addLog(message, type = 'info') {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    async function sendLogToCollector(level, message, logger = 'test-page') {
+      try {
+        const logEntry = {
+          service: 'test-frontend',
+          level: level,
+          message: message,
+          timestamp: new Date().toISOString(),
+          correlationId: 'test-session-123',
+          logger: logger
+        };
+
+        await fetch('http://localhost:7777/api/logs/batch', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ logs: [logEntry] })
+        });
+      } catch (error) {
+        console.error('Failed to send log:', error);
+      }
+    }
+
+    async function testFetch() {
+      addLog('Testing Fetch API...', 'info');
+      await sendLogToCollector('INFO', 'Testing Fetch API', 'http-test');
+
+      try {
+        const response = await fetch('http://localhost:7777/api/logs?limit=5');
+        const data = await response.json();
+
+        addLog(`✓ Fetch success: ${response.status} ${response.statusText}`, 'success');
+        addLog(`  Retrieved ${data.logs?.length || 0} logs`, 'info');
+
+        await sendLogToCollector(
+          'INFO',
+          `HTTP GET /api/logs ${response.status} - Retrieved ${data.logs?.length || 0} logs`,
+          'http.fetch'
+        );
+      } catch (error) {
+        addLog(`✗ Fetch error: ${error.message}`, 'error');
+        await sendLogToCollector('ERROR', `HTTP GET /api/logs FAILED - ${error.message}`, 'http.fetch');
+      }
+    }
+
+    function testXHR() {
+      addLog('Testing XMLHttpRequest...', 'info');
+      sendLogToCollector('INFO', 'Testing XMLHttpRequest', 'http-test');
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', 'http://localhost:7777/api/logs/services');
+      xhr.setRequestHeader('X-Custom-Header', 'test-value');
+
+      xhr.onload = function() {
+        addLog(`✓ XHR success: ${xhr.status} ${xhr.statusText}`, 'success');
+        const services = JSON.parse(xhr.responseText);
+        addLog(`  Services: ${services.services?.join(', ') || 'none'}`, 'info');
+
+        sendLogToCollector(
+          'INFO',
+          `HTTP GET /api/logs/services ${xhr.status} - Services: ${services.services?.length || 0}`,
+          'http.xhr'
+        );
+      };
+
+      xhr.onerror = function() {
+        addLog('✗ XHR error: Network error', 'error');
+        sendLogToCollector('ERROR', 'HTTP GET /api/logs/services FAILED - Network error', 'http.xhr');
+      };
+
+      xhr.send();
+    }
+
+    async function testManualLog() {
+      addLog('Sending manual logs to collector...', 'info');
+
+      await sendLogToCollector('DEBUG', 'This is a DEBUG log from test page', 'manual');
+      await sendLogToCollector('INFO', 'This is an INFO log from test page', 'manual');
+      await sendLogToCollector('WARN', 'This is a WARN log from test page', 'manual');
+      await sendLogToCollector('ERROR', 'This is an ERROR log from test page', 'manual');
+
+      addLog('✓ Sent 4 manual logs (DEBUG, INFO, WARN, ERROR)', 'success');
+      addLog('  Check the dashboard at http://localhost:7777', 'info');
+    }
+
+    function clearLog() {
+      logDiv.innerHTML = '';
+      addLog('Log cleared', 'info');
+    }
+
+    // Initialize
+    addLog('HTTP Capture Test Page loaded', 'success');
+    addLog('Click buttons above to test logging functionality', 'info');
+    sendLogToCollector('INFO', 'Test page initialized', 'page-load');
+  </script>
+</body>
+</html>
