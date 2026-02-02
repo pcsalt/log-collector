@@ -43,7 +43,7 @@ dependencies {
 
   // Testing
   testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("io.mockk:mockk:1.13.14")
+  testImplementation("io.mockk:mockk:1.14.9")
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
