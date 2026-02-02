@@ -63,7 +63,7 @@ class LogService(
     }
 
     jdbcTemplate.batchUpdate(sql, entities.map { entity ->
-      arrayOf(
+      arrayOf<Any?>(
         entity.service,
         entity.level,
         entity.message,
