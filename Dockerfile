@@ -15,7 +15,7 @@ COPY clients ./clients
 RUN gradle build -x test --no-daemon
 
 # Runtime stage
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 
 LABEL maintainer="pcsalt"
 LABEL description="Log Collector - Centralized logging service"
