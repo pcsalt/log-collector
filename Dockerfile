@@ -1,5 +1,5 @@
 # Multi-stage build for smaller image size
-FROM gradle:8.5-jdk21-alpine AS builder
+FROM gradle:9.3-jdk21-alpine AS builder
 
 WORKDIR /app
 
