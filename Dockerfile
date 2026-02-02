@@ -14,42 +14,36 @@ COPY clients ./clients
 # Build the application
 RUN gradle build -x test --no-daemon
 
-# Runtime stage
-FROM eclipse-temurin:21-jre-alpine
+# Create data directory for SQLite (will be copied to runtime)
+RUN mkdir -p /app/data
+
+# Runtime stage - Google Distroless (hardened, no shell, minimal attack surface)
+FROM gcr.io/distroless/java21-debian12:nonroot
 
 LABEL maintainer="pcsalt"
 LABEL description="Log Collector - Centralized logging service"
 LABEL version="1.0.0"
 
-# Create app user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-# Set working directory
 WORKDIR /app
 
-# Create data directory for database
-RUN mkdir -p /app/data && chown -R appuser:appgroup /app
+# Copy JAR from builder (nonroot image runs as uid 65532)
+COPY --from=builder --chown=65532:65532 /app/build/libs/log-collector.jar /app/log-collector.jar
 
-# Copy JAR from builder
-COPY --from=builder /app/build/libs/log-collector.jar /app/log-collector.jar
-
-# Change to non-root user
-USER appuser
+# Copy data directory with correct ownership for SQLite
+COPY --from=builder --chown=65532:65532 /app/data /app/data
 
 # Environment variables with defaults
 ENV SERVER_PORT=7777 \
     DATABASE_PATH=/app/data/logs.db \
     LOG_RETENTION_HOURS=24 \
     LOG_RETENTION_CRON="0 0 * * * *" \
-    CLEANUP_ENABLED=true \
-    JAVA_OPTS="-Xms256m -Xmx512m"
+    CLEANUP_ENABLED=true
 
 # Expose port
-EXPOSE ${SERVER_PORT}
+EXPOSE 7777
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:${SERVER_PORT}/actuator/health || exit 1
+# Distroless has no shell, so no wget for health check
+# Health check via Docker Compose or K8s liveness probe on /actuator/health
 
-# Run the application
-ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar /app/log-collector.jar"]
+# Run the application (exec form required - no shell in distroless)
+ENTRYPOINT ["java", "-Xms256m", "-Xmx512m", "-jar", "/app/log-collector.jar"]
