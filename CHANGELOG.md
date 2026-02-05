@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **API Key Authentication** - Protect `/api/**` endpoints with `X-API-Key` header
+  - Set `API_KEY` env var to enable authentication
+  - Use `API_KEY=auto` to auto-generate a secure key on startup
+  - Dashboard and health endpoints remain public
 - Environment variable configuration for all major settings
 - Docker support with multi-stage build
 - docker-compose.yml for easy deployment
@@ -23,9 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Log retention configurable via `LOG_RETENTION_HOURS` and `LOG_RETENTION_CRON`
 
 ### Security
+- API Key authentication for API endpoints
 - Non-root user in Docker container
 - Sensitive header filtering in HTTP capture
 - Input validation for log entries
+- Google Distroless base image (minimal attack surface)
 
 ## [0.1.0] - 2026-02-01
 

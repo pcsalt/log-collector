@@ -109,6 +109,43 @@ Configure the service using environment variables:
 | `LOG_RETENTION_HOURS` | 24 | How long to keep logs (hours) |
 | `LOG_RETENTION_CRON` | 0 0 * * * * | Cleanup schedule (cron expression) |
 | `CLEANUP_ENABLED` | true | Enable automatic log cleanup |
+| `API_KEY` | *(empty)* | API key for authentication (see below) |
+
+### Authentication
+
+API key authentication protects the `/api/**` endpoints.
+
+| `API_KEY` Value | Behavior |
+|-----------------|----------|
+| *(not set)* | Auth disabled - all requests allowed |
+| `my-secret-key` | Auth enabled - requires `X-API-Key` header |
+| `auto` | Auto-generate UUID key (logged on startup) |
+
+**Example with API key:**
+```bash
+# Start with custom API key
+docker run -d -p 7777:7777 -e API_KEY=my-secret-key krrishnaaaa/log-collector
+
+# Make authenticated request
+curl -H "X-API-Key: my-secret-key" http://localhost:7777/api/logs
+```
+
+**Example with auto-generated key:**
+```bash
+# Start with auto-generated key
+docker run -p 7777:7777 -e API_KEY=auto krrishnaaaa/log-collector
+
+# Check logs for generated key
+# ============================================================
+# AUTO-GENERATED API KEY: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+# Save this key! Use header: X-API-Key: a1b2c3d4-...
+# ============================================================
+```
+
+**Public endpoints (no auth required):**
+- `/` - Dashboard
+- `/actuator/health` - Health check
+- `/ws/**` - WebSocket connections
 
 ### Example `.env` file
 
@@ -118,6 +155,7 @@ DATABASE_PATH=/app/data/logs.db
 LOG_RETENTION_HOURS=168  # 7 days
 LOG_RETENTION_CRON=0 0 2 * * *  # Daily at 2 AM
 CLEANUP_ENABLED=true
+API_KEY=your-secret-api-key
 ```
 
 ## Client Libraries
