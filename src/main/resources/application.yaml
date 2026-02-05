@@ -10,12 +10,14 @@ datasource:
   url: jdbc:sqlite:${DATABASE_PATH:./data/logs.db}
   driver-class-name: org.sqlite.JDBC
 
-# Log cleanup settings
+# Log collector settings
 log-collector:
   cleanup:
     enabled: ${CLEANUP_ENABLED:true}
     retention-hours: ${LOG_RETENTION_HOURS:24}
     cron: ${LOG_RETENTION_CRON:0 0 * * * *}
+  auth:
+    api-key: ${API_KEY:}
 
 # Actuator
 management:
